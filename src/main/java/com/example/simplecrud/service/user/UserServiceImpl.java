@@ -41,6 +41,8 @@ public class UserServiceImpl implements UserService{
         if(byId.isPresent()){
             byId.get().setFirstName(user.getFirstName());
             byId.get().setLastName(user.getLastName());
+            byId.get().setUsername(user.getUsername());
+            byId.get().setPassword(user.getPassword());
             return repository.save(byId.get());
         }else{
             return byId.orElse(null);

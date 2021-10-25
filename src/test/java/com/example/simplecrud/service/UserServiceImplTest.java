@@ -4,7 +4,6 @@ import com.example.simplecrud.persistence.user.model.User;
 import com.example.simplecrud.persistence.user.repository.UserRepository;
 import com.example.simplecrud.service.user.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +30,8 @@ public class UserServiceImplTest {
     @Test
     @DisplayName("Test for creating user.")
     public void testCreate(){
-        User user = new User(1L, "asd", "asdyan");
-        User createdUser = new User(1L, "asd", "asdyan");
+        User user = new User(1L, "asd", "asdyan", "asd", "asd");
+        User createdUser = new User(1L, "asd", "asdyan", "asd", "asd");
         Mockito.when(userRepository.save(user)).thenReturn(createdUser);
         userService.create(user);
         Mockito.verify(userRepository, Mockito.times(1)).save(user);
@@ -41,7 +40,7 @@ public class UserServiceImplTest {
     @Test
     @DisplayName("Test for getting the user by id.")
     public void testGetById(){
-        User user = new User(5L, "kkk", "hhhh");
+        User user = new User(5L, "kkk", "hhhh", "kkk", "kkk");
         Mockito.when(userRepository.findById(5L)).thenReturn(Optional.of(user));
         userService.getById(5L);
         Mockito.verify(userRepository, Mockito.times(1)).findById(5L);
@@ -51,9 +50,9 @@ public class UserServiceImplTest {
     @DisplayName("Test for getting all users.")
     public void testGetAll(){
         List<User> userList = new ArrayList<>();
-        userList.add(new User(5L, "kkk", "hhhh"));
-        userList.add(new User(8L, "aaaaaaaaaa", "aaaaaaaaaaaaaa"));
-        userList.add(new User(9L, "aaaaaa", "AAAAAAAAAAAAAAAA"));
+        userList.add(new User(5L, "kkk", "hhhh", "kkk", "kkk"));
+        userList.add(new User(8L, "aaaaaaaaaa", "aaaaaaaaaaaaaa", "kkk", "kkk"));
+        userList.add(new User(9L, "aaaaaa", "AAAAAAAAAAAAAAAA", "kkk", "kkk"));
         Mockito.when(userRepository.findAll()).thenReturn(userList);
 
         userService.getAll();
@@ -64,8 +63,8 @@ public class UserServiceImplTest {
     @Test
     @DisplayName("Test for updating the user by id.")
     public void testUpdate(){
-        User user = new User(5L, "kkk", "HHHH");
-        Optional<User> gotUser = Optional.of(new User(5L, "kkk", "hhhh"));
+        User user = new User(5L, "kkk", "HHHH", "kkk", "kkk");
+        Optional<User> gotUser = Optional.of(new User(5L, "kkk", "hhhh", "kkk", "kkk"));
         Mockito.when(userRepository.findById(5L)).thenReturn(gotUser);
         gotUser.get().setFirstName(user.getFirstName());
         gotUser.get().setLastName(user.getLastName());
@@ -79,7 +78,7 @@ public class UserServiceImplTest {
     @Test
     @DisplayName("Test for deleting the user by id.")
     public void testDelete(){
-        User user = new User(5L, "asd", "hhhh");
+        User user = new User(5L, "asd", "hhhh", "kkk", "kkk");
         Mockito.when(userRepository.getById(5L)).thenReturn(user);
         userService.delete(5L);
         Mockito.verify(userRepository, Mockito.times(1)).delete(user);

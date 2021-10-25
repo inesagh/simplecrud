@@ -28,39 +28,41 @@ class UserControllerTest {
     private static TestRestTemplate restTemplate = null;
 
     @BeforeAll
-    public static void init(){
+    public static void init() {
         restTemplate = new TestRestTemplate();
     }
 
     @BeforeEach
-    public void setUp(){
-        baseUrl = baseUrl.concat(":").concat(port+ "").concat("/users");
+    public void setUp() {
+        baseUrl = baseUrl.concat(":").concat(port + "").concat("/users");
     }
 
     @Test
     @DisplayName("Test for getting the user by id.")
-    @Sql(statements = "INSERT INTO user(id, first_name, last_name) values(1, 'asd', 'asdyan')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "INSERT INTO user(id, first_name, last_name, username, password) values(1, 'asd', 'asdyan', 'asd', 'asd')",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = "DELETE FROM user",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testGetById(){
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testGetById() {
         User user = restTemplate.getForObject(baseUrl.concat("/{id}"), User.class, 1);
         assertAll(
                 () -> assertNotNull(user),
                 () -> assertEquals("asd", user.getFirstName()),
-                () -> assertEquals("asdyan", user.getLastName())
+                () -> assertEquals("asdyan", user.getLastName()),
+                () -> assertEquals("asd", user.getUsername()),
+                () -> assertEquals("asd", user.getLastName())
         );
     }
 
     @Test
     @DisplayName("Test for getting all users.")
-    @Sql(statements = "INSERT INTO user(id, first_name, last_name) values (1, 'ASD', 'ASDYAN')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "INSERT INTO user(id, first_name, last_name, username, password) values (1, 'ASD', 'ASDYAN', 'ASD', 'ASDYAN')",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = "DELETE FROM user",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testGetAll(){
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testGetAll() {
         List<User> userList = new ArrayList<>();
-        userList.add(new User(1L, "ASD", "ASDYAN"));
+        userList.add(new User(1L, "ASD", "ASDYAN", "ASD", "ASD"));
 
         ResponseEntity<User[]> forEntity = restTemplate.getForEntity(baseUrl, User[].class);
         User[] userArray = forEntity.getBody();
@@ -69,29 +71,33 @@ class UserControllerTest {
                 .collect(Collectors.toList());
         assertEquals(userList.get(0).getFirstName(), collect.get(0).getFirstName());
         assertEquals(userList.get(0).getLastName(), collect.get(0).getLastName());
+        assertEquals(userList.get(0).getUsername(), collect.get(0).getUsername());
+        assertEquals(userList.get(0).getPassword(), collect.get(0).getPassword());
     }
 
     @Test
     @DisplayName("Test for creating an user.")
     @Sql(statements = "DELETE FROM user",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testCreate(){
-        User user = restTemplate.postForEntity(baseUrl, new User(1L, "asd", "asdyan"), User.class).getBody();
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testCreate() {
+        User user = restTemplate.postForEntity(baseUrl, new User(1L, "asd", "asdyan", "asd", "asdyan"), User.class).getBody();
         assertAll(
                 () -> assertNotNull(user),
                 () -> assertEquals("asd", user.getFirstName()),
-                () -> assertEquals("asdyan", user.getLastName())
+                () -> assertEquals("asdyan", user.getLastName()),
+                () -> assertEquals("asd", user.getUsername()),
+                () -> assertEquals("asdyan", user.getPassword())
         );
     }
 
     @Test
     @DisplayName("Test for updating the user by id.")
     @Sql(statements = "INSERT INTO user(id, first_name, last_name) values(1, 'asd', 'asdyan')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = "DELETE FROM user",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testUpdate(){
-        User user = new User(1L, "Asd", "asdyan");
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testUpdate() {
+        User user = new User(1L, "Asd", "asdyan", "asd", "asd");
         HttpEntity<User> requestEntity = new HttpEntity<>(user);
         ResponseEntity<User> responseEntity = restTemplate.exchange(baseUrl.concat("/{id}"),
                 HttpMethod.PUT,
@@ -104,11 +110,11 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Test for deleting the user by id.")
-    @Sql(statements = "INSERT INTO user(id, first_name, last_name) values(1, 'asd', 'asdyan')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "INSERT INTO user(id, first_name, last_name, user_name, password) values(1, 'asd', 'asdyan', 'asd', 'asd')",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(statements = "DELETE FROM user",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testDelete(){
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testDelete() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> deleted = restTemplate.exchange(baseUrl.concat("/{id}"), HttpMethod.DELETE, entity, String.class, 1);
